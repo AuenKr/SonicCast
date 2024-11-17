@@ -33,12 +33,10 @@ export default function User() {
 
     socket.onmessage = async (event) => {
       const body: wsDataType = JSON.parse(event.data);
-      console.log("body type : ", body.type);
       if (audioPlayer.current) {
         const payload = body.payload;
         switch (body.type) {
           case "control-mode":
-            console.log("from control-mode: ", payload);
             const start = Date.now();
             const response = await fetch(timeServerUrl);
             const data = await response.json();
@@ -59,7 +57,6 @@ export default function User() {
               : audioPlayer.current.pause();
             break;
           case "control-state":
-            console.log("from control-state: ", payload);
             audioPlayer.current.playbackRate = payload.speed;
             audioPlayer.current.volume = payload.volume;
             break;

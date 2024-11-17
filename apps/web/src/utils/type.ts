@@ -9,4 +9,5 @@ export interface wsDataType {
     speed: number;
     volume: number;
   };
+  serverTime?: number;
 }

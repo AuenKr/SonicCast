@@ -68,9 +68,10 @@ function handleJoinMode(ws: WebSocket, payload: joinRoomPayloadType) {
 }
 
 function handleControlMode(payload: musicControlPayloadType) {
+  const time = Date.now();
   users.forEach((user) => {
     if (user.readyState === WebSocket.OPEN) {
-      user.send(JSON.stringify({ type: "control-mode", payload }));
+      user.send(JSON.stringify({ type: "control-mode", payload, serverTime: time }));
     }
   });
 }

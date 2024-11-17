@@ -1,21 +1,15 @@
-import SignInBtn from "@/components/SignInBtn";
-import { auth } from "@/lib/auth";
-
-const wssUrl = process.env.NEXT_PUBLIC_WS_Server || "ws://localhost:8080";
+import ControlBtn from "@/components/controlBtns";
+import LandingPage from "@/components/landing";
+import Navbar from "@/components/navbar";
 
 export default async function Home() {
-  const session = await auth();
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen">
-      <div>
-        Hello from <span> Home</span>
+    <div className="mx-4 m-2 flex flex-col justify-between items-center">
+      <div className="max-w-4xl">
+        <Navbar />
+        <LandingPage />
+        <ControlBtn />
       </div>
-      <div>{wssUrl}</div>
-      <div>
-        <SignInBtn />
-      </div>
-      {session?.user && <div>Hello, {session?.user?.name}</div>}
-      <div>{JSON.stringify(session)}</div>
     </div>
   );
 }
