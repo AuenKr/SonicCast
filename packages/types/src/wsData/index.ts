@@ -1,5 +1,6 @@
-interface wsDataMode {
+export interface wsDataMode {
   type: "join-mode" | "control-mode" | "control-state",
+  payload: any
 }
 
 interface payloadType {
@@ -25,31 +26,3 @@ export interface wsConnectionSentType extends wsDataMode {
     userType: "user" | "admin"
   }
 }
-
-export interface SearchResultType {
-  id: string;
-  name: string;
-  year: string;
-  duration: number;
-  playCount: number;
-  language: string;
-  artists: {
-    id: string;
-    name: string;
-    role: string;
-    image: {
-      quality: string;
-      url: string;
-    }[];
-    type: string;
-    url: string;
-  }[];
-  image: {
-    quality: string;
-    url: string;
-  }[];
-  downloadUrl: {
-    quality: string;
-    url: string;
-  }[];
-};

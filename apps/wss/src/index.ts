@@ -1,5 +1,5 @@
 import WebSocket, { WebSocketServer } from 'ws';
-import { joinRoomPayloadType, musicControlPayloadType, wsDataType } from './config/wsData';
+import { wsConnectionSentType, wsDataMode, wsDataSentType } from '@repo/types'
 
 const PORT = parseInt(process.env.PORT || "8080");
 
@@ -14,18 +14,18 @@ wss.on('connection', function connection(ws) {
 
   ws.on('message', function message(data) {
     try {
-      const body: wsDataType = JSON.parse(data.toString());
+      const body: wsDataMode = JSON.parse(data.toString());
       switch (body.type) {
         case "join-mode":
-          handleJoinMode(ws, body.payload as joinRoomPayloadType);
+          handleJoinMode(ws, body);
           break;
 
         case "control-mode":
-          handleControlMode(body.payload as musicControlPayloadType);
+          handleControlMode(body);
           break;
 
         case "control-state":
-          handleControlMode(body.payload as musicControlPayloadType);
+          handleControlMode(body);
           break;
 
         default:
@@ -51,7 +51,8 @@ function cleanupConnection(ws: WebSocket) {
   }
 }
 
-function handleJoinMode(ws: WebSocket, payload: joinRoomPayloadType) {
+function handleJoinMode(ws: WebSocket, body: wsConnectionSentType) {
+  const payload = body.payload;
   if (payload.userType === "admin") {
     admin = ws;
     console.log("Admin connected");
@@ -67,8 +68,9 @@ function handleJoinMode(ws: WebSocket, payload: joinRoomPayloadType) {
   }
 }
 
-function handleControlMode(payload: musicControlPayloadType) {
+function handleControlMode(body: wsDataSentType) {
   const time = Date.now();
+  const payload = body.payload;
   users.forEach((user) => {
     if (user.readyState === WebSocket.OPEN) {
       user.send(JSON.stringify({ type: "control-mode", payload, serverTime: time }));

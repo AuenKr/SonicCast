@@ -3,9 +3,9 @@ import TimeBox from "./timeBox";
 
 export default function Navbar() {
   return (
-    <nav className="w-full flex justify-between items-center">
+    <div className="w-full max-w-4xl flex justify-between items-center">
       <div className="flex text-lg justify-center">
-        <span className="px-2 animate-spin font-extrabold">{"((o))"}</span>
+        <span className="px-2 font-extrabold">{"((o))"}</span>
       </div>
       <div className="text-lg font-bold">
         <TimeBox />
@@ -13,6 +13,6 @@ export default function Navbar() {
       <div>
         <ThemeModeToggle />
       </div>
-    </nav>
+    </div>
   );
 }

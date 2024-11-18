@@ -1,0 +1,19 @@
+{
+  "name": "@repo/types",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm"
+  },
+  "exports": {
+    "types": "./src/wsData/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "typescript": "5.5.4"
+  }
+}

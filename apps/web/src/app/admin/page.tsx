@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { musicPath } from "@/config";
-import { wsDataType } from "@/utils/type";
+import { wsConnectionSentType, wsDataSentType } from "@repo/types";
 import { useEffect, useRef, useState } from "react";
 
 const wssUrl = process.env.NEXT_PUBLIC_WS_Server || "ws://localhost:8080";
@@ -22,14 +22,13 @@ export default function Admin() {
 
     socket.onopen = () => {
       setConnectionStatus("connected");
-      socket.send(
-        JSON.stringify({
-          type: "join-mode",
-          payload: {
-            userType: "admin",
-          },
-        })
-      );
+      const data: wsConnectionSentType = {
+        type: "join-mode",
+        payload: {
+          userType: "admin",
+        },
+      };
+      socket.send(JSON.stringify(data));
     };
 
     socket.onerror = (error) => {
@@ -57,7 +56,7 @@ export default function Admin() {
     if (audioPlayer.current) {
       setStatus((prev) => !prev);
 
-      const jsonData: wsDataType = {
+      const jsonData: wsDataSentType = {
         type: "control-mode",
         payload: {
           musicId: 123,
@@ -84,7 +83,7 @@ export default function Admin() {
   const handleOtherState = () => {
     if (!ws || connectionStatus !== "connected") return;
     if (audioPlayer.current) {
-      const data: wsDataType = {
+      const data: wsDataSentType = {
         type: "control-state",
         payload: {
           musicId: 123,

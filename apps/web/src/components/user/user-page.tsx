@@ -1,14 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { musicPath } from "@/config";
-import { wsDataReceiveType } from "@repo/types";
+import { wsConnectionSentType, wsDataReceiveType } from "@repo/types";
 import { useEffect, useRef, useState } from "react";
 
-const wssUrl = process.env.NEXT_PUBLIC_WS_Server || "ws://localhost:8080";
-const timeServerUrl =
-  process.env.NEXT_PUBLIC_TIME_SERVER || "http://localhost:3005";
-
-export default function User() {
+export default function UserPage() {
   const [connectionStatus, setConnectionStatus] = useState<
     "connecting" | "connected" | "error"
   >("connecting");
@@ -17,11 +13,13 @@ export default function User() {
   const [status, setStatus] = useState<boolean>(false);
 
   useEffect(() => {
-    const socket = new WebSocket(wssUrl);
+    const socket = new WebSocket(
+      process.env.NEXT_PUBLIC_WS_Server || "ws://localhost:8080"
+    );
 
     socket.onopen = () => {
       setConnectionStatus("connected");
-      const data = {
+      const data: wsConnectionSentType = {
         type: "join-mode",
         payload: {
           userType: "user",
@@ -36,13 +34,9 @@ export default function User() {
         const payload = body.payload;
         switch (body.type) {
           case "control-mode":
-            const start = Date.now();
-            const response = await fetch(timeServerUrl);
-            const data = await response.json();
-            const end = Date.now();
+            const serverTime = body.serverTime;
 
-            const adjustedSeekTime =
-              payload.startAt - data["datetime"] - (end - start);
+            const adjustedSeekTime = payload.startAt - serverTime.getTime();
             setDelay(adjustedSeekTime);
 
             audioPlayer.current.currentTime = payload.currSeekPos;
@@ -55,10 +49,12 @@ export default function User() {
                 }, adjustedSeekTime)
               : audioPlayer.current.pause();
             break;
+
           case "control-state":
             audioPlayer.current.playbackRate = payload.speed;
             audioPlayer.current.volume = payload.volume;
             break;
+
           default:
             console.log("Invalid body type ", body.type);
         }
@@ -86,7 +82,8 @@ export default function User() {
         <h1 className="text-2xl font-bold">User Page</h1>
         <div>
           {connectionStatus === "connecting" && "Connecting..."}
-          {connectionStatus === "connected" && `Connected to ${wssUrl}`}
+          {connectionStatus === "connected" &&
+            `Connected to ${process.env.NEXT_PUBLIC_WS_Server || "ws://localhost:8080"}`}
           {connectionStatus === "error" && "Connection Error"}
         </div>
         <div className="flex justify-center w-full">
