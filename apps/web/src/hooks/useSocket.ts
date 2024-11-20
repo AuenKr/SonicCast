@@ -2,7 +2,7 @@ import { userWsConnectionAtom } from "@/state/atom/userAtom";
 import { useAtom } from "jotai";
 import { useEffect } from "react";
 
-const ws_url = process.env.NEXT_PUBLIC_WS_SERVER || "http://localhost:3005";
+const ws_url = process.env.NEXT_PUBLIC_WS_SERVER || "http://localhost:8080";
 
 export function useSocket() {
   const [socket, setSocket] = useAtom(userWsConnectionAtom);
@@ -20,7 +20,7 @@ export function useSocket() {
     return () => {
       socket?.close();
     };
-  }, []);
+  }, [socket]);
 
   return socket;
 }

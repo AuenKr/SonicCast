@@ -2,11 +2,13 @@
 
 import { SongDetailType, songSuggestionResponseType } from "@repo/types";
 
+const song_url = process.env.SONG_SERVER || "http://localhost:3005";
+
 export async function searchSong(name: string) {
   if (!name.length)
     return [];
 
-  const url = `${process.env.SONG_SERVER}/api/search/songs?limit=10&query=${name}`;
+  const url = `${song_url}/api/search/songs?limit=10&query=${name}`;
 
   const response = await fetch(url);
   const body = await response.json();
@@ -33,7 +35,7 @@ export async function searchSong(name: string) {
 export async function searchSongById(id: string) {
   if (!id.length) return {};
 
-  const url = `${process.env.SONG_SERVER}/api/songs/${id}`;
+  const url = `${song_url}/api/songs/${id}`;
 
   const response = await fetch(url);
   const body = await response.json();

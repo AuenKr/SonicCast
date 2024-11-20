@@ -1,6 +1,3 @@
-# Define build arguments
-ARG WS_SERVER_URL
-
 FROM node:20-alpine
 
 RUN npm install -g pnpm
@@ -25,10 +22,6 @@ COPY apps/wss/package.json ./apps/wss/
 COPY packages/types/package.json ./packages/types/
 COPY packages/eslint-config/package.json ./packages/eslint-config/
 COPY packages/typescript-config/package.json ./packages/typescript-config/
-
-# Pass the environment variable to the build process
-ARG WS_SERVER_URL
-ENV NEXT_PUBLIC_WS_SERVER=$WS_SERVER_URL
 
 RUN pnpm install
 
