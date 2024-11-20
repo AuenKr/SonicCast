@@ -62,22 +62,18 @@ export function UserPage({ id }: { id: string }) {
             title: "Connected to room",
           });
           handleJoinMode(body as unknown as wsServerJoinModeType);
-          console.log("inside type ", body.type);
           break;
 
         case "control-mode": // handle the only play, speed increase logic
           handleControlMode(body as unknown as wsServerControlModeType);
-          console.log("inside type ", body.type);
           break;
 
         case "control-state": // Broadcast to all user song has changed
           handleControlState(body as unknown as wsServerStateModeType);
-          console.log("inside type ", body.type);
           break;
 
         case "update-mode": // Broadcast to all room user, about song status: volume, pause.
           handleUpdateMode(body as unknown as wsServerUpdateModeType);
-          console.log("inside type ", body.type);
           break;
 
         case "server-error": // Server error occur
@@ -88,7 +84,6 @@ export function UserPage({ id }: { id: string }) {
             title: errorMsg,
             variant: "destructive",
           });
-          console.log("inside type ", body.type);
           break;
 
         default:

@@ -14,9 +14,7 @@ export function useUserWebSocketHandler() {
   }, [])
 
   const handleControlMode = useCallback((body: wsServerControlModeType) => {
-    console.log("control mode called")
     const payload = body.payload;
-    console.log(payload);
     setActiveUser(body.activeUser);
     setMusicRunningStatus(payload.runningStatus);
   }, [])

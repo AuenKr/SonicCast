@@ -6,8 +6,9 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "build": "tsc",
-    "start": "pnpm run build && node dist/index.js",
-    "dev": "nodemon src/index.ts"
+    "start": "node dist/index.js",
+    "dev": "nodemon src/index.ts",
+    "docker:start": "pnpm run build && npm run start"
   },
   "keywords": [],
   "author": "",

@@ -12,7 +12,8 @@
       ],
       "outputs": [
         ".next/**",
-        "!.next/cache/**"
+        "!.next/cache/**",
+        "./dist/**"
       ]
     },
     "lint": {
@@ -26,6 +27,9 @@
     },
     "start": {
       "cache": true
+    },
+    "docker:start": {
+      "cache": false
     }
   }
 }

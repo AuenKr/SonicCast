@@ -33,7 +33,7 @@ export async function searchSong(name: string) {
 export async function searchSongById(id: string) {
   if (!id.length) return {};
 
-  const url = `${"http://localhost:3006"}/api/songs/${id}`;
+  const url = `${process.env.SONG_SERVER}/api/songs/${id}`;
 
   const response = await fetch(url);
   const body = await response.json();

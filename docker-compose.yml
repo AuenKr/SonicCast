@@ -1,0 +1,20 @@
+services:
+  music-server:
+    container_name: music-server-jio
+    restart: always
+    image: auenkr/jio-savan-api
+    ports:
+      - 7005:3000
+
+  application:
+    container_name: sound-cast
+    restart: always
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 7000:3000
+      - 7080:8080
+    environment:
+      - NEXT_PUBLIC_WS_SERVER=ws://sound-cast:8080
+      - SONG_SERVER=http://music-server-jio:3000

@@ -6,7 +6,7 @@ import { useUser } from "@/hooks/useUser";
 import { useSocket } from "@/hooks/useSocket";
 import { useEffect } from "react";
 import { wsInitialDataSentType } from "@repo/types";
-import { wsReceiveMsg, wsSendMsg } from "@/lib";
+import { wsSendMsg } from "@/lib";
 
 export function AdminPage({ id }: { id: string }) {
   const user = useUser();
@@ -28,10 +28,10 @@ export function AdminPage({ id }: { id: string }) {
       wsSendMsg(socket, joinDataAdmin);
     };
 
-    socket.onmessage = (event) => {
-      const body = wsReceiveMsg(event);
-      console.log(body);
-    };
+    // socket.onmessage = (event) => {
+    //   const body = wsReceiveMsg(event);
+    //   console.log(body);
+    // };
   }, [socket, user]);
 
   return (

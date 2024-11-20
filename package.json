@@ -2,11 +2,13 @@
   "name": "sound-sync",
   "private": true,
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "start": "turbo start"
+    "start": "turbo start",
+    "docker:start": "turbo docker:start"
   },
   "devDependencies": {
     "prettier": "^3.2.5",
