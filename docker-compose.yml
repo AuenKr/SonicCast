@@ -12,9 +12,11 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
+      args:
+        WS_SERVER_URL: "ws://localhost:7080"
     ports:
       - 7000:3000
       - 7080:8080
     environment:
-      - NEXT_PUBLIC_WS_SERVER=ws://sound-cast:8080
-      - SONG_SERVER=http://music-server-jio:3000
+      - NEXT_PUBLIC_WS_SERVER=ws://localhost:7080
+      - SONG_SERVER=http://music-server:3000
