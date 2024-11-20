@@ -1,31 +1,50 @@
-import WebSocket, { WebSocketServer } from 'ws';
-import { wsConnectionSentType, wsDataMode, wsDataSentType } from '@repo/types'
+import { WebSocket, WebSocketServer } from 'ws';
+import { wsClientControlModeType, wsClientModeType, wsClientStateModeType, wsClientUpdateModeType, wsInitialDataSentType } from '@repo/types'
+import { handleControlMode, handleControlState, handleJoinMode, handleUpdateMode } from './utils';
+import { error } from 'console';
+import { roomManger } from './roomManger';
 
 const PORT = parseInt(process.env.PORT || "8080");
-
-let admin: WebSocket | null = null;
-let users: WebSocket[] = [];
-
 const wss = new WebSocketServer({ port: PORT });
 
-console.log("Start server on port 8080");
-wss.on('connection', function connection(ws) {
-  ws.on('error', console.error);
+console.log("Start server on port ", PORT);
+wss.on('connection', function connection(ws: WebSocket) {
+
+  ws.send(JSON.stringify({ msg: "connection established" }));
+
+  ws.on('error', () => {
+    console.log("error", error);
+    ws.close();
+  });
+
+  ws.on('close', () => {
+    const roomId = roomManger.getRoomIdByWs(ws);
+    roomManger.removeUser(ws);
+    console.log("user left room ", roomId);
+  });
 
   ws.on('message', function message(data) {
     try {
-      const body: wsDataMode = JSON.parse(data.toString());
+      const body: wsClientModeType = JSON.parse(data.toString());
       switch (body.type) {
-        case "join-mode":
-          handleJoinMode(ws, body);
+        case "join-mode": // Initial room join
+          handleJoinMode(ws, body as unknown as wsInitialDataSentType)
+          console.log("join-mode");
           break;
 
-        case "control-mode":
-          handleControlMode(body);
+        case "control-mode": // handle the only play, speed logic
+          handleControlMode(ws, body as unknown as wsClientControlModeType)
+          console.log("control-mode");
           break;
 
-        case "control-state":
-          handleControlMode(body);
+        case "control-state": // Broadcast to all user song has changed
+          handleControlState(ws, body as unknown as wsClientStateModeType)
+          console.log("control-state");
+          break;
+
+        case "update-mode": // Broadcast to all room user, about song status: volume, pause.
+          handleUpdateMode(ws, body as unknown as wsClientUpdateModeType);
+          console.log("update-mode");
           break;
 
         default:
@@ -35,45 +54,4 @@ wss.on('connection', function connection(ws) {
       console.error("Error processing message:", error);
     }
   });
-
-  ws.send(JSON.stringify({ type: "connected" }));
-
-  ws.on('close', () => cleanupConnection(ws));
 });
-
-function cleanupConnection(ws: WebSocket) {
-  if (admin === ws) {
-    console.log("Admin disconnected");
-    admin = null;
-  } else {
-    users = users.filter((user) => user !== ws);
-    console.log("active user ", users.length);
-  }
-}
-
-function handleJoinMode(ws: WebSocket, body: wsConnectionSentType) {
-  const payload = body.payload;
-  if (payload.userType === "admin") {
-    admin = ws;
-    console.log("Admin connected");
-    ws.send(JSON.stringify({
-      "msg": "admin connected"
-    }))
-  } else {
-    users.push(ws);
-    console.log("User connected ", users.length);
-    ws.send(JSON.stringify({
-      "active user ": users.length
-    }))
-  }
-}
-
-function handleControlMode(body: wsDataSentType) {
-  const time = Date.now();
-  const payload = body.payload;
-  users.forEach((user) => {
-    if (user.readyState === WebSocket.OPEN) {
-      user.send(JSON.stringify({ type: "control-mode", payload, serverTime: time }));
-    }
-  });
-}

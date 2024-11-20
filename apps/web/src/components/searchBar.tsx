@@ -12,31 +12,53 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { Input } from "./ui/input";
-import { searchSong } from "@/actions/song";
-import { SearchResultType } from "@/utils/type";
-import { songDetailAtom } from "@/state/atom/songAtom";
+import { searchSong, suggestedSong } from "@/actions/song";
+import {
+  SongDetailType,
+  SongRunningStatusType,
+  wsClientStateModeType,
+} from "@repo/types";
+import { songDetailAtom, songRunningStatusAtom } from "@/state/atom/songAtom";
 import { SearchResultBox, SearchResultBoxShadow } from "./SearchResult";
 import { DialogTitle } from "@radix-ui/react-dialog";
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { DialogDescription } from "./ui/dialog";
+import { userAtom, userWsConnectionAtom } from "@/state/atom/userAtom";
+import { wsSendMsg } from "@/lib";
 
 export function SearchBar() {
   const [input, setInput] = useState<string>("");
-  const [searchResult, setSearchResult] = useState<SearchResultType[]>([]);
+  const [searchResult, setSearchResult] = useState<SongDetailType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [open, setOpen] = useState(true);
   const searchContainerRef = useRef<HTMLDivElement>(null); // Ref for the search container
+
   const setSelectedSong = useSetAtom(songDetailAtom);
+  const setSongRunningStatus = useSetAtom(songRunningStatusAtom);
+  const user = useAtomValue(userAtom);
+
+  const socket = useAtomValue(userWsConnectionAtom);
+
+  // search suggestions
+  useEffect(() => {
+    suggestedSong().then((results) => {
+      setSearchResult(results);
+      setLoading(false);
+    });
+  }, []);
 
   // For debouncing search box
   useEffect(() => {
-    setLoading(true);
-    const x = setTimeout(async () => {
-      const results = await searchSong(input);
-      setSearchResult(results);
-      setLoading(false);
-    }, 300);
-    return () => clearTimeout(x);
+    let x: NodeJS.Timeout;
+    if (input.length >= 1) {
+      setLoading(true);
+      x = setTimeout(async () => {
+        const results = await searchSong(input);
+        setSearchResult(results);
+        setLoading(false);
+      }, 300);
+    }
+    return () => x && clearTimeout(x);
   }, [input]);
 
   // For Cmd J
@@ -53,11 +75,34 @@ export function SearchBar() {
   }, []);
 
   const handleSelectedSong = useCallback(
-    (song: SearchResultType) => {
+    (song: SongDetailType) => {
       setSelectedSong(song);
       setOpen(false);
+
+      if (!socket || !user) return;
+
+      const clientTime = new Date();
+      const runningStatus: SongRunningStatusType = {
+        currentTime: 0,
+        speed: 1,
+        volume: 100,
+        status: "pause",
+      };
+      setSongRunningStatus(runningStatus);
+
+      const data: wsClientStateModeType = {
+        type: "control-state",
+        createTime: clientTime,
+        roomId: user.roomId,
+        payload: {
+          musicDetail: song,
+          runningStatus,
+        },
+      };
+
+      wsSendMsg(socket, data);
     },
-    [setSelectedSong]
+    [setSelectedSong, socket]
   );
 
   return (

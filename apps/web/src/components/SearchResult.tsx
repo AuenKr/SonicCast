@@ -1,7 +1,7 @@
-import { SearchResultType } from "@/utils/type";
+import { SongDetailType } from "@repo/types";
 import Image from "next/image";
 
-export function SearchResultBox({ song }: { song: SearchResultType }) {
+export function SearchResultBox({ song }: { song: SongDetailType }) {
   return (
     <div className="button flex w-full gap-2 items-center m-2 rounded-md cursor-pointer">
       <Image
@@ -10,6 +10,7 @@ export function SearchResultBox({ song }: { song: SearchResultType }) {
         width={50}
         height={50}
         className="size-11 flex-grow-0 border rounded-full object-contain"
+        unoptimized
       />
       <div className="flex-grow flex flex-col w-full gap-2 items-center justify-center">
         <span className="w-full">

@@ -1,14 +1,6 @@
-1. Landing page -> Done
-
 2. Admin Page ->
-  - Songs list
-  - search bar
-  - select 
   - sync btn
-  - global controller
 
 2. User page
-  - current song details
-  - no control of music playing
-  - a btn to first interact with meet for first time
+  - fix delay time 
 

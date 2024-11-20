@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "check-types": "tsc --noEmit"
   },
   "exports": {
     "types": "./src/wsData/index.ts"
