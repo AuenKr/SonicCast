@@ -15,16 +15,28 @@ export class Room {
 
   public removeUser(userWs: WebSocket) {
     if (userWs === this.admin) {
-      this.users.forEach((each) => {
-        userWs.close(0, JSON.stringify({
-          msg: "Admin left the room",
-        }))
-        this.users.delete(each);
-      })
+      this.users.forEach((eachUser) => {
+        if (eachUser.readyState === WebSocket.OPEN) {
+          eachUser.send(
+            JSON.stringify({ msg: "Admin left the room, connection will be closed." }),
+            () => eachUser.close(1001, "Admin left the room")
+          );
+        }
+      });
+
+      this.users.clear();
+      userWs.close(1000, "You left the room");
+    } else {
+      if (userWs.readyState === WebSocket.OPEN) {
+        userWs.send(
+          JSON.stringify({ msg: "You have been disconnected." }),
+          () => userWs.close(1000, "User disconnected")
+        );
+      }
+      this.users.delete(userWs);
     }
-    userWs.close();
-    this.users.delete(userWs);
   }
+
 
   public deleteRoom() {
     this.removeUser(this.admin);

@@ -33,7 +33,6 @@ export interface wsClientControlModeType extends wsClientModeType {
 
 export interface wsServerModeType extends wsDataMode {
   type: "join-mode" | "control-mode" | "control-state" | "server-error" | "update-mode";
-  serverReceiveTime: Date;
   serverSendTime: Date;
   payload: any;
 }
@@ -50,6 +49,7 @@ export interface wsServerJoinModeType extends wsServerModeType {
   activeUser: number;
   payload: {
     msg: string;
+    delay: number;
   }
 }
 
