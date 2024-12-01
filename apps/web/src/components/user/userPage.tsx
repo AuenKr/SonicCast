@@ -87,10 +87,17 @@ export function UserPage({ id }: { id: string }) {
           break;
 
         default:
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const msg: string = (body as unknown as any).msg;
           console.warn("Unknown message type:", body.type);
+          toast({
+            title: msg,
+            variant: "destructive",
+          });
       }
     };
   }, [socket, user]);
+
   return (
     <div className="flex flex-col items-center gap-2 mt-5">
       <div className="gap-2 flex flex-col text-center">

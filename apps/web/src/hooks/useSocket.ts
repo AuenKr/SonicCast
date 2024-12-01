@@ -11,9 +11,6 @@ export function useSocket() {
     if (!socket) {
       const ws = new WebSocket(ws_url);
 
-      ws.onclose = () => {
-      };
-
       setSocket(ws);
     }
 

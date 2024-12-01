@@ -5,12 +5,19 @@ import { SongPlayer } from "./songPlayer";
 import { useUser } from "@/hooks/useUser";
 import { useSocket } from "@/hooks/useSocket";
 import { useEffect } from "react";
-import { wsInitialDataSentType } from "@repo/types";
-import { wsSendMsg } from "@/lib";
+import {
+  wsInitialDataSentType,
+  wsServerModeType,
+  wsServerStateModeType,
+} from "@repo/types";
+import { wsReceiveMsg, wsSendMsg } from "@/lib";
+import { useAtom } from "jotai";
+import { activeUserAtom } from "@/state/atom/userAtom";
 
 export function AdminPage({ id }: { id: string }) {
   const user = useUser();
   const socket = useSocket();
+  const [activeUser, setActiveUser] = useAtom(activeUserAtom);
 
   useEffect(() => {
     if (!socket || !user) return;
@@ -28,10 +35,20 @@ export function AdminPage({ id }: { id: string }) {
       wsSendMsg(socket, joinDataAdmin);
     };
 
-    // socket.onmessage = (event) => {
-    //   const body = wsReceiveMsg(event);
-    //   console.log(body);
-    // };
+    socket.onmessage = (event) => {
+      const body: wsServerModeType = wsReceiveMsg(event);
+
+      switch (body.type) {
+        case "control-state": // Broadcast to all user song has changed
+          const serverBody = body as unknown as wsServerStateModeType;
+          setActiveUser(serverBody.activeUser);
+          break;
+
+        default:
+          console.warn("Unknown message type:", body);
+      }
+    };
+
   }, [socket, user]);
 
   return (
@@ -41,6 +58,7 @@ export function AdminPage({ id }: { id: string }) {
         <span>
           Room Id : <span className="font-bold">{id}</span>
         </span>
+        <span>Active User: {activeUser}</span>
       </div>
       <div className="w-full max-w-lg">
         <SearchBar />
